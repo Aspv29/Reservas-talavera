@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Hotel Talavera 4:18",
+  "description": "A web-based reservation confirmation tool for Hotel Talavera. Allows staff to generate, preview, and download PDF booking confirmations.",
+  "requestFramePermissions": []
+}
