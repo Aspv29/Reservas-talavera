@@ -18,25 +18,27 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17' # Volvemos a Java 17, que es el estándar para Capacitor 5
+          java-version: '17'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Dependencies
         run: |
           npm install
-          # INSTALAMOS LA VERSIÓN 5 (Súper Estable)
-          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
+          # Instalamos Capacitor 5 (Estable) y Vite para asegurar que el comando funcione
+          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5 vite
 
-      - name: Build Web App
-        run: npm run build
+      - name: Build Web App (FORCE RELATIVE PATH)
+        # AQUÍ ESTÁ EL TRUCO: Forzamos la base relativa con --base=./
+        # Esto arregla la pantalla blanca ignorando cualquier otra configuración fallida
+        run: npx vite build --base=./
 
       - name: Setup Capacitor & Android
         run: |
-          # Inicializamos el proyecto con la configuración de Capacitor 5
+          # Inicializamos apuntando a la carpeta 'dist' que crea Vite
           npx cap init "Reservas App" "com.reservas.app" --web-dir dist
           npx cap add android
 
