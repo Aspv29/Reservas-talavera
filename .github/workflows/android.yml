@@ -25,20 +25,27 @@ jobs:
         with:
           node-version: 20
 
+      - name: NUCLEAR FIX - Borrar configuraciones viejas
+        # Esto elimina cualquier archivo que esté estorbando
+        run: rm -f capacitor.config.ts capacitor.config.json vite.config.ts vite.config.js
+
+      - name: Crear Configuración Perfecta de Vite
+        # Creamos un archivo nuevo que OBLIGA a usar rutas relativas y la carpeta 'dist'
+        run: |
+           echo "import { defineConfig } from 'vite'; import react from '@vitejs/plugin-react'; export default defineConfig({ base: './', plugins: [react()], build: { outDir: 'dist' } });" > vite.config.js
+
       - name: Install Dependencies
         run: |
           npm install
-          # Instalamos Capacitor 5 (Estable) y Vite para asegurar que el comando funcione
-          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5 vite
+          # Re-instalamos lo vital por si acaso falta algo
+          npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5 @vitejs/plugin-react vite
 
-      - name: Build Web App (FORCE RELATIVE PATH)
-        # AQUÍ ESTÁ EL TRUCO: Forzamos la base relativa con --base=./
-        # Esto arregla la pantalla blanca ignorando cualquier otra configuración fallida
-        run: npx vite build --base=./
+      - name: Build Web App
+        run: npx vite build
 
       - name: Setup Capacitor & Android
         run: |
-          # Inicializamos apuntando a la carpeta 'dist' que crea Vite
+          # Iniciamos apuntando EXPLICITAMENTE a 'dist'
           npx cap init "Reservas App" "com.reservas.app" --web-dir dist
           npx cap add android
 
