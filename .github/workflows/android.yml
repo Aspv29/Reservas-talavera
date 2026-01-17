@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '21' # Mantenemos el 21 que ya funcionó
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -26,7 +26,6 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        # Aquí instalamos Capacitor porque tu proyecto no lo tiene
         run: |
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
@@ -35,10 +34,11 @@ jobs:
         run: npm run build
 
       - name: Setup Capacitor & Android
-        # Esto crea la carpeta 'android' que te falta
         run: |
           npx cap init "Reservas App" "com.reservas.app" --web-dir dist
           npx cap add android
+          # ESTA ES LA MAGIA: Forzamos la versión de Kotlin para evitar duplicados
+          sed -i "s/kotlinVersion = .*/kotlinVersion = '1.9.10'/" android/variables.gradle
 
       - name: Build APK with Gradle
         working-directory: ./android
@@ -49,3 +49,4 @@ jobs:
         with:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
